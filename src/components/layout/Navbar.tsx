@@ -2,86 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Poppins } from "next/font/google";
+import Image from "next/image";
 import { ChevronRight, ChevronDown, Menu, X } from "lucide-react";
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  display: "swap",
-});
-
-type Sub = { label: string; href: string };
-type NavItem = {
-  label: string;
-  href: string;
-  description?: string; // shown in the left column of the mega menu
-  items?: Sub[];
-};
-
-const NAV: NavItem[] = [
-  {
-    label: "Our Story",
-    href: "/about-us",
-    description:
-      "Jindal Steel is one of India’s leading steel manufacturers, with a significant presence in steel, power, mining and infrastructure.",
-    items: [
-      { label: "Overview", href: "/about-us" },
-      { label: "Our Leadership", href: "/leadership" },
-      { label: "Awards & Recognition", href: "/awards" },
-    ],
-  },
-  {
-    label: "Mine to Metal",
-    href: "/mine-to-metal",
-    description:
-      "An integrated value chain that takes us from raw material to finished steel. (Replace with your own text.)",
-    items: [
-      { label: "Overview", href: "/mine-to-metal" },
-      { label: "Mining", href: "/mining" },
-      { label: "Captive Power", href: "/power" },
-      { label: "Steel", href: "/steel" },
-      { label: "Our Portfolio", href: "/our-portfolio" },
-      { label: "India Operations", href: "/india-operations" },
-      { label: "Africa Operations", href: "/africa-operations" },
-    ],
-  },
-  { label: "Our Portfolio", href: "/our-portfolio" },
-  {
-    label: "Sustainability",
-    href: "/sustainability-at-jindal-steel",
-    description:
-      "Building a responsible future for our people, communities and planet. (Replace with your own text.)",
-    items: [
-      { label: "Overview", href: "/sustainability-at-jindal-steel" },
-      { label: "R.I.S.E", href: "/sustainability-rise" },
-      { label: "Responsible Governance", href: "/responsible-governance" },
-      { label: "Inclusive Growth", href: "/inclusive-growth" },
-      { label: "Sustainable Environment", href: "/sustainable-environment" },
-      { label: "Ethical Partnerships", href: "/ethical-partnerships" },
-    ],
-  },
-  {
-    label: "People",
-    href: "/people",
-    description:
-      "Our people are the strength behind everything we build. (Replace with your own text.)",
-    items: [
-      { label: "Overview", href: "/people" },
-      { label: "Career", href: "/career-opportunity" },
-      { label: "Jindal Steel Edge", href: "/jindal-steel-edge" },
-      { label: "Life at Jindal Steel", href: "/life-at-jindal-steel" },
-    ],
-  },
-  { label: "Investor", href: "/investor-media" },
-  { label: "Newsroom", href: "/press-releases" },
-  { label: "Steel of India", href: "/steel-of-india" },
-];
-
-// Download both into /public/images/logo/ for production.
-// The white logo URL is a guess: verify it, or export a white version yourself.
-const LOGO_DARK = "https://www.jindalsteel.in/images/logo/jindal-steel-logo-black.svg";
-const LOGO_LIGHT = "https://www.jindalsteel.in/images/logo/jindal-steel-logo-white.svg";
+import {
+  HEADER_NAV_ITEMS,
+  NAVBAR_SCROLL_THRESHOLD,
+  SITE_LOGO,
+} from "../../constants/navigation";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -90,7 +17,8 @@ export default function Navbar() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () =>
+      setScrolled(window.scrollY > NAVBAR_SCROLL_THRESHOLD);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -103,7 +31,9 @@ export default function Navbar() {
     };
   }, [mobileOpen]);
 
-  const activeItem = NAV.find((n) => n.label === active && n.items);
+  const activeItem = HEADER_NAV_ITEMS.find(
+    (item) => item.label === active && item.items?.length,
+  );
   const solid = scrolled || !!activeItem || mobileOpen;
 
   function closeMobile() {
@@ -114,35 +44,29 @@ export default function Navbar() {
   return (
     <header
       onMouseLeave={() => setActive(null)}
-      className={`${poppins.className} fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-        solid ? "bg-white shadow-sm" : "bg-transparent"
+      className={`fixed inset-x-0 top-0 z-50 bg-white transition-shadow duration-300 ${
+        solid ? "shadow-md" : ""
       }`}
     >
       <div className="mx-auto flex h-[88px] max-w-[1600px] items-center justify-between px-5 lg:h-[110px] lg:px-12">
-        {/* Logo: both versions stacked, cross-faded */}
-        <Link href="/" aria-label="Jindal Steel home" className="relative block h-12 w-40 lg:h-16 lg:w-52">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={LOGO_LIGHT}
-            alt="Jindal Steel"
-            className={`absolute inset-0 h-full w-full object-contain object-left transition-opacity duration-300 ${
-              solid ? "opacity-0" : "opacity-100"
-            }`}
-          />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={LOGO_DARK}
-            alt=""
-            aria-hidden
-            className={`absolute inset-0 h-full w-full object-contain object-left transition-opacity duration-300 ${
-              solid ? "opacity-100" : "opacity-0"
-            }`}
+        <Link
+          href="/"
+          aria-label="Shib Dass & Sons home"
+          className="relative block h-12 w-40 lg:h-16 lg:w-52"
+        >
+          <Image
+            src={SITE_LOGO}
+            alt="Shib Dass & Sons Pvt Limited"
+            fill
+            priority
+            sizes="(min-width: 1024px) 208px, 160px"
+            className="object-contain object-left"
           />
         </Link>
 
         {/* Desktop nav */}
         <nav aria-label="Main navigation" className="hidden items-center gap-6 xl:flex 2xl:gap-9">
-          {NAV.map((item) => {
+          {HEADER_NAV_ITEMS.map((item) => {
             const isActive = active === item.label;
             return (
               <Link
@@ -152,15 +76,13 @@ export default function Navbar() {
                 onFocus={() => setActive(item.label)}
                 className={`relative whitespace-nowrap py-2 text-[15px] font-medium uppercase tracking-wide transition-colors 2xl:text-[17px] ${
                   isActive
-                    ? "text-orange-500"
-                    : solid
-                    ? "text-neutral-700 hover:text-orange-500"
-                    : "text-white hover:text-orange-300"
+                    ? "text-brand-700"
+                    : "text-slate-800 hover:text-brand-700"
                 }`}
               >
                 {item.label}
                 <span
-                  className={`absolute inset-x-0 -bottom-0.5 h-[2px] origin-left bg-orange-500 transition-transform duration-300 ${
+                  className={`absolute inset-x-0 -bottom-0.5 h-[2px] origin-left bg-brand-600 transition-transform duration-300 ${
                     isActive ? "scale-x-100" : "scale-x-0"
                   }`}
                 />
@@ -175,7 +97,7 @@ export default function Navbar() {
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileOpen}
           onClick={() => setMobileOpen((o) => !o)}
-          className={`p-2 xl:hidden ${solid ? "text-neutral-900" : "text-white"}`}
+          className="p-2 text-slate-800 transition-colors hover:text-brand-700 xl:hidden"
         >
           {mobileOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
@@ -190,7 +112,7 @@ export default function Navbar() {
         {activeItem && (
           <div className="mx-auto grid max-w-[1600px] grid-cols-[minmax(0,560px)_1fr] gap-16 px-12 pb-14 pt-6">
             <div>
-              <h3 className="border-b border-orange-400 pb-4 text-2xl font-medium uppercase text-neutral-600">
+              <h3 className="border-b border-brand-400 pb-4 text-2xl font-medium uppercase text-slate-700">
                 {activeItem.label}
               </h3>
               {activeItem.description && (
@@ -201,16 +123,16 @@ export default function Navbar() {
             </div>
 
             <ul className="grid content-start gap-x-16 gap-y-1 pt-3 sm:grid-cols-2 2xl:grid-cols-3">
-              {activeItem.items!.map((sub) => (
+              {activeItem.items?.map((sub) => (
                 <li key={sub.label}>
                   <Link
                     href={sub.href}
                     onClick={() => setActive(null)}
-                    className="group flex items-center gap-4 py-3 text-lg font-light text-neutral-600 transition-colors hover:text-orange-500"
+                    className="group flex items-center gap-4 py-3 text-lg font-light text-slate-600 transition-colors hover:text-brand-700"
                   >
                     <ChevronRight
                       size={18}
-                      className="text-emerald-600 transition-transform group-hover:translate-x-1"
+                      className="text-brand-600 transition-transform group-hover:translate-x-1"
                     />
                     {sub.label}
                   </Link>
@@ -227,7 +149,7 @@ export default function Navbar() {
           aria-label="Mobile navigation"
           className="max-h-[calc(100vh-88px)] overflow-y-auto border-t border-neutral-200 bg-white px-5 pb-8 xl:hidden"
         >
-          {NAV.map((item) => {
+          {HEADER_NAV_ITEMS.map((item) => {
             const open = expanded === item.label;
             return (
               <div key={item.label} className="border-b border-neutral-100">
@@ -261,9 +183,9 @@ export default function Navbar() {
                         key={sub.label}
                         href={sub.href}
                         onClick={closeMobile}
-                        className="flex items-center gap-3 py-2.5 text-sm font-light text-neutral-600 hover:text-orange-500"
+                        className="flex items-center gap-3 py-2.5 text-sm font-light text-slate-600 hover:text-brand-700"
                       >
-                        <ChevronRight size={14} className="text-emerald-600" />
+                        <ChevronRight size={14} className="text-brand-600" />
                         {sub.label}
                       </Link>
                     ))}

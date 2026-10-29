@@ -13,9 +13,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Jindal Steel | Building the Future",
-  description:
-    "Explore steel products, corporate information, sustainability, and careers.",
+  title: "Shib Dass & Sons | Steel Solutions",
+  description: "Explore steel products and connect with Shib Dass & Sons.",
 };
 
 export default function RootLayout({
